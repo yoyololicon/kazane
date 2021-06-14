@@ -14,9 +14,9 @@ if __name__ == '__main__':
 
     batch = 4
     sr = 44100
-    pairs = [(44100, 48000), (48000, 44100), (22050, 44100), (44100, 22050)]
-    duration = 2
-    zeros = 24
+    pairs = [(20000, 25000), (25000, 20000), (2205, 44100), (44100, 2205)]
+    duration = 10
+    zeros = 32
 
     num_threads = torch.get_num_threads()
     print(f'Benchmarking on {num_threads} threads')
