@@ -11,6 +11,28 @@ BLOCK_RATIO = 4
 
 
 class Decimate(nn.Module):
+    r"""Downsampling by an integer amount.
+
+    Args:
+        q (int): downsample factor
+        num_zeros (int): number of zero crossing to keep in the sinc filter. Default: ``16``
+        window_func (Callable): window function. Default: :meth:`hann_window <torch.hann_window>`
+        **kwargs: arguments passed through to :meth:`sinc_kernel <torch.sinc_kernel>`
+
+    Shape:
+        - Input: `[*, T]`
+        - Output: `[*, T / q]`
+
+    Examples::
+
+        >>> import torch
+        >>> decimater = Decimate(4)
+        >>> x = torch.randn(1000)
+        >>> print(len(decimater(x)))
+        250
+
+    """
+
     def __init__(self,
                  q: int = 2,
                  num_zeros: int = 16,
