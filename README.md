@@ -37,7 +37,7 @@ upsampler = kazane.Upsample(2, window_func=torch.blackman_window)
 ```
 
 ## Benchmarks on CUDA
-Using the benchmark scripts at the root dir, you can see that FFT can give some speed improvements when the sample rate changes with some common integer numbers.
+Using the benchmark scripts at [bench](./bench), you can see that FFT can gives some speed improvements when the sample rate changes with some common integer numbers.
 ```
 [---------- Down sample ----------]
                |  julius  |  kazane
