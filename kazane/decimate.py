@@ -39,6 +39,7 @@ class Decimate(nn.Module):
                  window_func: Callable[[int],
                                        torch.Tensor] = torch.hann_window,
                  **kwargs):
+        assert q > 1, "q should be greater than 1"
         super().__init__()
         kernel = sinc_kernel(num_zeros, q, **kwargs)
         N = kernel.numel()
