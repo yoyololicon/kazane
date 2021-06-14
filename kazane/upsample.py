@@ -61,25 +61,24 @@ class Upsample(nn.Module):
                                                         q).t().reshape(q, 1, -1).flip(0)
         self.stride = q
         self.padding = N // 2 // q
-        self.register_buffer('kernel', kernel[1:].contiguous())
+        self.register_buffer('kernel', kernel)
 
     def forward(self, x: torch.Tensor):
         shape = x.shape
         x = x.view(-1, 1, shape[-1])
-        orig_x = x.view(-1, shape[-1], 1)
 
         block_length = self.kernel.shape[-1] * BLOCK_RATIO
         if shape[-1] < block_length:
             x = F.pad(x, [self.padding] * 2, mode='reflect')
             y = _custom_fft_conv1d(x, self.kernel)
         else:
-            num_filters = self.kernel.shape[0]
+            q = self.kernel.shape[0]
             x = _pad_to_block_2(x, block_length, self.padding)
             num_blocks = x.shape[-2]
             x = x.reshape(-1, 1, x.shape[-1])
             y = _custom_fft_conv1d(x, self.kernel)
-            y = y.view(-1, num_blocks, num_filters, block_length
-                       ).transpose(1, 2).reshape(-1, num_filters, num_blocks * block_length)[..., :shape[-1]]
+            y = y.view(-1, num_blocks, q, block_length).transpose(1,
+                                                                  2).reshape(-1, q, num_blocks * block_length)[..., :shape[-1]]
 
-        y = torch.cat([orig_x, y.transpose(1, 2)], 2)
+        y = y.transpose(1, 2).contiguous()
         return y.view(*shape[:-1], -1)
