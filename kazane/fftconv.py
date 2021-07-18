@@ -22,7 +22,8 @@ def _custom_fft_conv1d(input: Tensor, weight: Tensor,
 
     X = rfft(input, n=s)
     W = rfft(weight, n=s)
-    W.imag.mul_(-1)
+    # W.imag.mul_(-1)
+    torch.view_as_real(W)[..., 1].mul_(-1)
     Y = X * W
 
     # handle stride
@@ -32,8 +33,11 @@ def _custom_fft_conv1d(input: Tensor, weight: Tensor,
         step_size = new_n_fft // 2
         strided_Y_size = step_size + 1
 
-        unfolded_Y_real = Y.real.unfold(-1, strided_Y_size, step_size)
-        unfolded_Y_imag = Y.imag[...,
+        tmpY = torch.view_as_real(Y)
+        Y_real, Y_imag = tmpY[..., 0], tmpY[..., 1]
+
+        unfolded_Y_real = Y_real.unfold(-1, strided_Y_size, step_size)
+        unfolded_Y_imag = Y_imag[...,
                                  1:].unfold(-1, strided_Y_size - 2, step_size)
         Y_pos_real, Y_pos_imag = unfolded_Y_real[..., ::2,
                                                  :].sum(-2), unfolded_Y_imag[..., ::2, :].sum(-2)

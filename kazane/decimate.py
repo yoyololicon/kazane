@@ -7,8 +7,6 @@ from .sinc import sinc_kernel
 from .upsample import _pad_to_block_2
 from .fftconv import _custom_fft_conv1d
 
-BLOCK_RATIO = 4
-
 
 class Decimate(nn.Module):
     r"""Downsampling by an integer amount.
@@ -32,6 +30,8 @@ class Decimate(nn.Module):
         250
 
     """
+    __constants__ = ['BLOCK_RATIO']
+    BLOCK_RATIO: int = 4
 
     def __init__(self,
                  q: int = 2,
@@ -54,7 +54,7 @@ class Decimate(nn.Module):
         shape = x.shape
         x = x.view(-1, 1, shape[-1])
 
-        block_length = self.kernel.shape[-1] * self.stride * BLOCK_RATIO
+        block_length = self.kernel.shape[-1] * self.stride * self.BLOCK_RATIO
         out_size = shape[-1] // self.stride
         if shape[-1] < block_length:
             x = F.pad(x, [self.padding] * 2, mode='reflect')
@@ -66,4 +66,4 @@ class Decimate(nn.Module):
             y = _custom_fft_conv1d(x, self.kernel, stride=self.stride)
             y = y.view(-1, num_blocks * y.shape[-1])[..., :out_size]
 
-        return y.view(*shape[:-1], -1)
+        return y.view(shape[:-1] + (-1,))

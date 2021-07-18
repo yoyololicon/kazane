@@ -29,7 +29,7 @@ def test_quality_sine(q, zeros, rms):
     DURATION = 2
     sr = 44100
     sr_new = sr // q
-    dec = Decimate(q, zeros, roll_off=0.945).to(dtype)
+    dec = torch.jit.script(Decimate(q, zeros, roll_off=0.945)).to(dtype)
 
     x = make_tone(FREQ, sr, DURATION)
     y = make_tone(FREQ, sr_new, DURATION)
@@ -52,7 +52,7 @@ def test_quality_sweep(q, zeros, rms):
     DURATION = 5
     sr = 44100
     sr_new = sr // q
-    dec = Decimate(q, zeros, roll_off=0.945).to(dtype)
+    dec = torch.jit.script(Decimate(q, zeros, roll_off=0.945)).to(dtype)
 
     x = make_sweep(FREQ, sr, DURATION)
     y = make_sweep(FREQ, sr_new, DURATION)

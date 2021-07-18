@@ -5,8 +5,6 @@ from typing import Callable
 from .sinc import sinc_kernel
 from .fftconv import _custom_fft_conv1d
 
-BLOCK_RATIO = 5
-
 
 def _pad_to_block(x, block_size):
     offset = x.shape[-1] % block_size
@@ -15,7 +13,7 @@ def _pad_to_block(x, block_size):
     return x.view(*x.shape[:-1], -1, block_size)
 
 
-def _pad_to_block_2(x, block_size, padding):
+def _pad_to_block_2(x: torch.Tensor, block_size: int, padding: int):
     offset = x.shape[-1] % block_size
     if offset:
         offset = block_size - offset
@@ -45,6 +43,8 @@ class Upsample(nn.Module):
         1500
 
     """
+    __constants__ = ['BLOCK_RATIO']
+    BLOCK_RATIO: int = 5
 
     def __init__(self,
                  q: int = 2,
@@ -67,7 +67,7 @@ class Upsample(nn.Module):
         shape = x.shape
         x = x.view(-1, 1, shape[-1])
 
-        block_length = self.kernel.shape[-1] * BLOCK_RATIO
+        block_length = self.kernel.shape[-1] * self.BLOCK_RATIO
         if shape[-1] < block_length:
             x = F.pad(x, [self.padding] * 2, mode='reflect')
             y = _custom_fft_conv1d(x, self.kernel)
@@ -81,4 +81,4 @@ class Upsample(nn.Module):
                                                                   2).reshape(-1, q, num_blocks * block_length)[..., :shape[-1]]
 
         y = y.transpose(1, 2).contiguous()
-        return y.view(*shape[:-1], -1)
+        return y.view(shape[:-1] + (-1,))
