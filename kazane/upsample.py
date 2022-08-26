@@ -17,7 +17,31 @@ def _pad_to_block_2(x: torch.Tensor, block_size: int, padding: int):
     offset = x.shape[-1] % block_size
     if offset:
         offset = block_size - offset
-    x = F.pad(x, [padding, offset + padding], mode='reflect')
+    paddings = [padding, offset + padding]
+    if max(paddings) >= x.shape[-1]:
+        flipped_x = x.flip(-1)
+        tensors = [x]
+        left_padding, right_padding = paddings
+        step = False
+        while left_padding > 0:
+            if step:
+                tensors.insert(0, x[..., -left_padding-1:-1])
+            else:
+                tensors.insert(0, flipped_x[..., -left_padding-1:-1])
+            left_padding -= x.shape[-1] - 1
+            step = not step
+
+        step = False
+        while right_padding > 0:
+            if step:
+                tensors.append(x[..., 1:right_padding + 1])
+            else:
+                tensors.append(flipped_x[..., 1:right_padding + 1])
+            right_padding -= x.shape[-1] - 1
+            step = not step
+        x = torch.cat(tensors, -1)
+    else:
+        x = F.pad(x, [padding, offset + padding], mode='reflect')
     return x.unfold(-1, block_size + 2 * padding, block_size)
 
 
