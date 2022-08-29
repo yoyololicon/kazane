@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from typing import Callable
 
 from .sinc import sinc_kernel
-from .upsample import _pad_to_block_2
+from .upsample import _pad_to_block_2, _manual_reflect_pad
 from .fftconv import _custom_fft_conv1d
 
 
@@ -57,7 +57,7 @@ class Decimate(nn.Module):
         block_length = self.kernel.shape[-1] * self.stride * self.BLOCK_RATIO
         out_size = shape[-1] // self.stride
         if shape[-1] < block_length:
-            x = F.pad(x, [self.padding] * 2, mode='reflect')
+            x = _manual_reflect_pad(x, (self.padding, self.padding))
             y = _custom_fft_conv1d(x, self.kernel, stride=self.stride)
         else:
             x = _pad_to_block_2(x, block_length, self.padding)
@@ -67,3 +67,4 @@ class Decimate(nn.Module):
             y = y.view(-1, num_blocks * y.shape[-1])[..., :out_size]
 
         return y.view(shape[:-1] + (-1,))
+

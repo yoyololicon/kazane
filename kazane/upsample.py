@@ -91,7 +91,7 @@ class Upsample(nn.Module):
 
         block_length = self.kernel.shape[-1] * self.BLOCK_RATIO
         if shape[-1] < block_length:
-            x = F.pad(x, [self.padding] * 2, mode='reflect')
+            x = _manual_reflect_pad(x, (self.padding, self.padding))
             y = _custom_fft_conv1d(x, self.kernel)
         else:
             q = self.kernel.shape[0]
