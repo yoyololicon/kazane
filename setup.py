@@ -1,7 +1,7 @@
 import setuptools
 
 NAME = "kazane"
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 AUTHOR = 'Chin-Yun Yu'
 EMAIL = 'lolimaster.cs03@nctu.edu.tw'
 
