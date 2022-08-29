@@ -62,3 +62,9 @@ def test_quality_sweep(q, zeros, rms):
 
     err = torch.mean(torch.abs(y[idx] - y_pred[idx])).item()
     assert err <= rms, '{:g} > {:g}'.format(err, rms)
+
+
+def test_short_input():
+    decimater = Decimate(4)
+    x = torch.randn(8)
+    y = decimater(x)
