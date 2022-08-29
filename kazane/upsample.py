@@ -6,13 +6,6 @@ from .sinc import sinc_kernel
 from .fftconv import _custom_fft_conv1d
 
 
-def _pad_to_block(x, block_size):
-    offset = x.shape[-1] % block_size
-    if offset:
-        x = F.pad(x, [0, block_size - offset], mode='reflect')
-    return x.view(*x.shape[:-1], -1, block_size)
-
-
 def _pad_to_block_2(x: torch.Tensor, block_size: int, padding: int):
     offset = x.shape[-1] % block_size
     if offset:
