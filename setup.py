@@ -18,7 +18,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yoyololicon/kazane",
-    packages=setuptools.find_packages(),
+    packages=["kazane"],
     install_requires=['torch'],
     classifiers=[
         "Programming Language :: Python :: 3",
