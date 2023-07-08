@@ -1,9 +1,9 @@
 import setuptools
 
 NAME = "kazane"
-VERSION = '1.0.3'
-AUTHOR = 'Chin-Yun Yu'
-EMAIL = 'lolimaster.cs03@nctu.edu.tw'
+VERSION = "1.0.4"
+AUTHOR = "Chin-Yun Yu"
+EMAIL = "lolimaster.cs03@nctu.edu.tw"
 
 
 with open("README.md", "r") as fh:
@@ -19,7 +19,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yoyololicon/kazane",
     packages=["kazane"],
-    install_requires=['torch'],
+    install_requires=["torch"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
